@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>MOTO MADNESS</title>
+    
+    <link rel="stylesheet" href="./styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <section id="seleccionar-moto">
+      <h1 class="title">MOTO MADNESS</h1>
+
+      <h2>Pick your whip</h2>
+
+      <div id='contenedorTarjetas' class="motos">
+
+      </div>
+      <button id="boton-moto"> Seleccionar </button>
+    </section>
+
+    <section id="seleccionar-ataque">
+      <h1 class="title" class=""> MOTO MADNESS </h1>
+
+      <h2> PICK YOUR CLASS </h2>
+
+      <div id='contenedorAtaques'class="tarjetas-ataques">
+      </div>
+      <div>
+         <div id="mensajes">
+          <p id="resultado">Suerte pa, veremos que tan bueno sos ;)</p>
+         
+
+       <section id="reiniciar">
+          <button id="boton-reiniciar">Reiniciar</button>
+       </section>
+      </div>
+      <div class="ataques">
+
+        <div class="ataques-jugador">
+          <p id="vidas-jugador"> 3 </p> 
+          <p id="moto-jugador"></p> 
+          <div id="ataques-del-jugador"></div>
+        </div>
+        <div class="ataques-enemigo">
+          <p id="vidas-enemigo"> 3 </p>
+          <p id="moto-enemigo"></p>
+          <div id="ataques-del-enemigo"></div>
+        </div>
+        <div id="ataques-del-jugador"></div>
+        <div id="ataques-del-enemigo"></div>
+      </div>
+    </section> 
+      <script src="./js/mokepon.js"></script>
+      
+  </body>
+</html>
