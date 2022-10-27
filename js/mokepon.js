@@ -20,15 +20,21 @@ let inputYamaha;
 let inputDucati;
 let motosJugador;
 let ataquesMotos;
+let ataquesMotoEnemigo;
 
 let motos = [];
-let ataqueJugador;
-let ataqueEnemigo;
+let ataqueJugador = [];
+let ataqueEnemigo = [];
 let botonReiniciar;
 let botonTurbo;
 let botonAspirado;
 let botonNitro;
+let botones = [];
+let indexAtaqueJugador;
+let indexAtaqueEnemigo;
 let opcionDeMotos;
+let victoriasJugador = 0;
+let victoriasEnemigo = 0;
 let vidasJugador = 3;
 let vidasEnemigo = 3;
 
@@ -136,7 +142,7 @@ function extraerAtaques(motosJugador) {
 function mostrarAtaques(ataques) {
   ataques.forEach((ataque) => {
     ataquesMotos = `
-      <button id="${ataque.id}" class="boton-de-class">${ataque.nombre}</button>`;
+      <button id="${ataque.id}" class="boton-de-class BAtaque">${ataque.nombre}</button>`;
     contenedorAtaques.innerHTML += ataquesMotos;
   });
 
@@ -144,78 +150,114 @@ function mostrarAtaques(ataques) {
   botonTurbo = document.getElementById("boton-turbo");
   botonAspirado = document.getElementById("boton-aspirado");
   botonNitro = document.getElementById("boton-nitro");
+  botones = document.querySelectorAll(".BAtaque");
+}
 
-  botonTurbo.addEventListener("click", ataqueTurbo);
-  botonReiniciar.addEventListener("click", reiniciarJuego);
-
-  botonNitro.addEventListener("click", ataqueNitro);
-  botonAspirado.addEventListener("click", ataqueAspirado);
+function secuenciaAtaque() {
+  botones.forEach((boton) => {
+    boton.addEventListener("click", (e) => {
+      if (e.target.textContent === "⚙") {
+        ataqueJugador.push("TURBO");
+        console.log(ataqueJugador);
+        boton.style.background = "#112f58";
+        boton.disabled = true;
+      } else if (e.target.textContent === "💨") {
+        ataqueJugador.push("ASPIRADO");
+        console.log(ataqueJugador);
+        boton.style.background = "#112f58";
+        boton.disabled = true;
+      } else {
+        ataqueJugador.push("NITRO");
+        console.log(ataqueJugador);
+        boton.style.background = "#112f58";
+        boton.disabled = true;
+      }
+      ataqueAleatorioEnemigo();
+    });
+  });
 }
 
 function seleccionarMotoEnemigo() {
   let motoAleatorio = aleatorio(0, motos.length - 1);
 
   spanMotoEnemigo.innerHTML = motos[motoAleatorio].nombre;
-}
-
-function ataqueTurbo() {
-  ataqueJugador = "TURBO";
-  ataqueAleatorioEnemigo();
-}
-
-function ataqueAspirado() {
-  ataqueJugador = "ASPIRADO";
-  ataqueAleatorioEnemigo();
-}
-
-function ataqueNitro() {
-  ataqueJugador = "NITRO";
-  ataqueAleatorioEnemigo();
+  ataquesMotoEnemigo = motos[motoAleatorio].ataques;
+  secuenciaAtaque();
 }
 
 function ataqueAleatorioEnemigo() {
-  let ataqueAleatorio = aleatorio(1, 3);
+  let ataqueAleatorio = aleatorio(0, ataquesMotoEnemigo.length - 1);
 
-  if (ataqueAleatorio == 1) {
-    ataqueEnemigo = "NITRO";
-  } else if (ataqueAleatorio == 2) {
-    ataqueEnemigo = "ASPIRADO";
+  if (ataqueAleatorio == 0 || ataqueAleatorio == 1) {
+    ataqueEnemigo.push("TURBO");
+  } else if (ataqueAleatorio == 3 || ataqueAleatorio == 4) {
+    ataqueEnemigo.push("ASPIRADO");
   } else {
-    ataqueEnemigo = "NITRO";
+    ataqueEnemigo.push("NITRO");
   }
+  console.log(ataqueEnemigo);
+  iniciarPelea();
+}
+function iniciarPelea() {
+  console.log("iniciar pelea", ataqueJugador);
+  if (ataqueJugador.length === 5) {
+    combate();
+  }
+}
 
-  combate();
+function indexAmbosOponentes(jugador, enemigo) {
+  indexAtaqueJugador = ataqueJugador[jugador];
+  indexAtaqueEnemigo = ataqueEnemigo[enemigo];
 }
 
 function combate() {
-  if (ataqueEnemigo == ataqueJugador) {
-    crearMensaje(" EMPATE 😑");
-  } else if (ataqueJugador == "TURBO" && ataqueEnemigo == "NITRO") {
-    crearMensaje(" GANASTE!🏆");
-    vidasEnemigo--;
-    spanVidasEnemigo.innerHTML = vidasEnemigo;
-  } else if (ataqueJugador == "ASPIRADO" && ataqueEnemigo == "TURBO") {
-    crearMensaje(" GANASTE!🏆");
-    vidasEnemigo--;
-    spanVidasEnemigo.innerHTML = vidasEnemigo;
-  } else if (ataqueJugador == "NITRO" && ataqueEnemigo == "ASPIRADO") {
-    crearMensaje(" GANASTE!🏆");
-    vidasEnemigo--;
-    spanVidasEnemigo.innerHTML = vidasEnemigo;
-  } else {
-    crearMensaje(" PERDISTE 😞");
-    vidasJugador--;
-    spanVidasJugador.innerHTML = vidasJugador;
+  for (let index = 0; index < ataqueJugador.length; index++) {
+    console.log("combate", index);
+    if (ataqueJugador[index] === ataqueEnemigo[index]) {
+      indexAmbosOponentes(index, index);
+      crearMensaje("EMPATE");
+    } else if (
+      ataqueJugador[index] === "TURBO" &&
+      ataqueEnemigo[index] === "ASPIRADO"
+    ) {
+      indexAmbosOponentes(index, index);
+      crearMensaje("GANASTE");
+      victoriasJugador++;
+      spanVidasJugador.innerHTML = victoriasJugador;
+    } else if (
+      ataqueJugador[index] === "NITRO" &&
+      ataqueEnemigo[index] === "TURBO"
+    ) {
+      indexAmbosOponentes(index, index);
+      crearMensaje("GANASTE");
+      victoriasJugador++;
+      spanVidasJugador.innerHTML = victoriasJugador;
+    } else if (
+      ataqueJugador[index] === "ASPIRADO" &&
+      ataqueEnemigo[index] === "NITRO"
+    ) {
+      indexAmbosOponentes(index, index);
+      crearMensaje("GANASTE");
+      victoriasJugador++;
+      spanVidasJugador.innerHTML = victoriasJugador;
+    } else {
+      indexAmbosOponentes(index, index);
+      crearMensaje("PERDISTE");
+      victoriasEnemigo++;
+      spanVidasEnemigo.innerHTML = victoriasEnemigo;
+    }
   }
 
   revisarVidas();
 }
 
 function revisarVidas() {
-  if (vidasEnemigo == 0) {
+  if (victoriasJugador === victoriasEnemigo) {
+    crearMensajeFinal("EMPATASTE PA MAL AHI");
+  } else if (victoriasJugador > victoriasEnemigo) {
     crearMensajeFinal("CONGRATS PA GANASTE UwU");
-  } else if (vidasJugador == 0) {
-    crearMensajeFinal("SORRY BRO PERDISTE DE PIOLA :(");
+  } else {
+    crearMensajeFinal("PERDISTE DE PIOLA PA :(");
   }
 }
 
@@ -225,8 +267,8 @@ function crearMensaje(resultado) {
   let nuevoAtaqueDelEnemigo = document.createElement("p");
 
   sectionMensajes.innerHTML = resultado;
-  nuevoAtaqueDelJugador.innerHTML = ataqueJugador;
-  nuevoAtaqueDelEnemigo.innerHTML = ataqueEnemigo;
+  nuevoAtaqueDelJugador.innerHTML = indexAtaqueJugador;
+  nuevoAtaqueDelEnemigo.innerHTML = indexAtaqueEnemigo;
 
   ataquesDelJugador.appendChild(nuevoAtaqueDelJugador);
   ataquesDelEnemigo.appendChild(nuevoAtaqueDelEnemigo);
@@ -235,13 +277,7 @@ function crearMensaje(resultado) {
 function crearMensajeFinal(resultadoFinal) {
   sectionMensajes.innerHTML = resultadoFinal;
 
-  botonTurbo.disabled = true;
-
-  botonAspirado.disabled = true;
-
-  botonNitro.disabled = true;
-
-  sectionReiniciar.style.display = "flex";
+  sectionReiniciar.style.display = "block";
 }
 
 function reiniciarJuego() {

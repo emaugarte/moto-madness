@@ -33,7 +33,7 @@ body {
 }
 
 #boton-moto {
-  width: 210px;
+  width: 80px;
   height: 80px;
   border-radius: 20px;
   background-color: transparent;
@@ -113,7 +113,7 @@ body {
   padding: 10px;
   box-sizing: border-box;
   border-radius: 30px;
-  width: 200px;
+  width: 80px;
   color: aliceblue;
 }
 
