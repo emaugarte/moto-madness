@@ -14,6 +14,7 @@
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
   </head>
   <body>
     <section id="seleccionar-moto">
@@ -28,12 +29,14 @@
     </section>
 
     <section id='ver-mapa'>
-      <h1 class="title">Recorre el mapa con tu moto</h1>
+      <h2 class="title">Recorre el mapa con tu moto</h2>
       <canvas id="mapa"></canvas>
-      <button onmouseup="detenerMovimiento()" onmousedown="moverArriba()">Arriba</button>
-      <button onmouseup="detenerMovimiento()" onmousedown="moverIzquierda()">Izquierda</button>
-      <button onmouseup="detenerMovimiento()" onmousedown="moverAbajo()">Abajo</button>
-      <button onmouseup="detenerMovimiento()" onmousedown="moverDerecha()">Derecha</button>
+      <button onpointerup="detenerMovimiento()" onpointerdown="moverArriba()">Arriba</button>
+      <div>
+        <button onpointerup="detenerMovimiento()" onpointerdown="moverIzquierda()">Izquierda</button>
+        <button onpointerup="detenerMovimiento()" onpointerdown="moverAbajo()">Abajo</button>
+        <button onpointerup="detenerMovimiento()" onpointerdown="moverDerecha()">Derecha</button>
+        </div>
     </section>
 
     <section id="seleccionar-ataque">
