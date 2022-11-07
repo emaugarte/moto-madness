@@ -20,6 +20,7 @@ const sectionVerMapa = document.getElementById("ver-mapa");
 const mapa = document.getElementById("mapa");
 
 let jugadorId = null;
+let enemigoId = null;
 let inputKawasaki;
 let inputYamaha;
 let inputDucati;
@@ -61,7 +62,8 @@ mapa.width = anchoDelMapa;
 mapa.height = alturaQueBuscamos;
 
 class MotoMadness {
-  constructor(nombre, foto, vida, fotoMapa) {
+  constructor(nombre, foto, vida, fotoMapa, id = null) {
+    this.id = id;
     this.nombre = nombre;
     this.foto = foto;
     this.vida = vida;
@@ -109,26 +111,26 @@ let ducati = new MotoMadness(
 );
 
 const KAWASAKI_ATAQUES = [
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "🌠", id: "boton-nitro" },
+  { nombre: "⚙ Turbo ⚙ ", id: "boton-turbo" },
+  { nombre: "⚙ Turbo ⚙", id: "boton-turbo" },
+  { nombre: "⚙ Turbo ⚙", id: "boton-turbo" },
+  { nombre: "💨 Aspirado 💨", id: "boton-aspirado" },
+  { nombre: "🌠 Nitro 🌠", id: "boton-nitro" },
 ];
 const YAMAHA_ATAQUES = [
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "🌠", id: "boton-nitro" },
+  { nombre: "💨 Aspirado 💨", id: "boton-aspirado" },
+  { nombre: "💨 Aspirado 💨", id: "boton-aspirado" },
+  { nombre: "💨 Aspirado 💨", id: "boton-aspirado" },
+  { nombre: "⚙ Turbo ⚙", id: "boton-turbo" },
+  { nombre: "🌠 Nitro 🌠", id: "boton-nitro" },
 ];
 
 const DUCATI_ATAQUES = [
-  { nombre: "🌠", id: "boton-nitro" },
-  { nombre: "🌠", id: "boton-nitro" },
-  { nombre: "🌠", id: "boton-nitro" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "⚙", id: "boton-turbo" },
+  { nombre: "🌠 Nitro 🌠", id: "boton-nitro" },
+  { nombre: "🌠 Nitro 🌠", id: "boton-nitro" },
+  { nombre: "🌠 Nitro 🌠", id: "boton-nitro" },
+  { nombre: "💨 Aspirado 💨", id: "boton-aspirado" },
+  { nombre: "⚙ Turbo ⚙", id: "boton-turbo" },
 ];
 
 kawasaki.ataques.push(...KAWASAKI_ATAQUES);
@@ -243,12 +245,12 @@ function mostrarAtaques(ataques) {
 function secuenciaAtaque() {
   botones.forEach((boton) => {
     boton.addEventListener("click", (e) => {
-      if (e.target.textContent === "⚙") {
+      if (e.target.textContent === "⚙ Turbo ⚙") {
         ataqueJugador.push("TURBO");
         console.log(ataqueJugador);
         boton.style.background = "#112f58";
         boton.disabled = true;
-      } else if (e.target.textContent === "💨") {
+      } else if (e.target.textContent === "💨 Aspirado 💨") {
         ataqueJugador.push("ASPIRADO");
         console.log(ataqueJugador);
         boton.style.background = "#112f58";
@@ -259,8 +261,42 @@ function secuenciaAtaque() {
         boton.style.background = "#112f58";
         boton.disabled = true;
       }
-      ataqueAleatorioEnemigo();
+      if (ataqueJugador.length === 5) {
+        enviarAtaques();
+      }
     });
+  });
+
+  intervalo = setInterval(obtenerAtaques, 50);
+}
+
+function obtenerAtaques() {
+  fetch(`http://localhost:8080/moto-madness/${enemigoId}/ataques`).then(
+    function (res) {
+      if (res.ok) {
+        res.json().then(function ({ ataques }) {
+          if (ataques.length === 5) {
+            ataqueEnemigo = ataques;
+
+            if (ataqueJugador.length === 5) {
+              combate();
+            }
+          }
+        });
+      }
+    }
+  );
+}
+
+function enviarAtaques() {
+  fetch(`http://localhost:8080/moto-madness/${jugadorId}/ataques`, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      ataques: ataqueJugador,
+    }),
   });
 }
 
@@ -296,6 +332,8 @@ function indexAmbosOponentes(jugador, enemigo) {
 }
 
 function combate() {
+  clearInterval(intervalo);
+
   for (let index = 0; index < ataqueJugador.length; index++) {
     console.log("combate", index);
     if (ataqueJugador[index] === ataqueEnemigo[index]) {
@@ -384,12 +422,8 @@ function pintarCanvas() {
 
   motosEnemigos.forEach(function (moto) {
     moto.pintarMoto();
+    revisarColision(moto);
   });
-  if (
-    motoJugadorObjeto.velocidadX !== 0 ||
-    motoJugadorObjeto.velocidadY !== 0
-  ) {
-  }
 }
 
 function enviarPosicion(x, y) {
@@ -406,33 +440,36 @@ function enviarPosicion(x, y) {
   }).then(function (res) {
     if (res.ok) {
       res.json().then(function ({ enemigos }) {
-        console.log(enemigos);
-        console.log(enemigos);
         motosEnemigos = enemigos.map(function (enemigo) {
           let motoEnemigo = null;
-          const motoNombre = enemigo.moto.nombre || "";
+
+          const motoNombre = enemigo?.moto?.nombre ?? "";
           if (motoNombre === "Kawasaki") {
             motoEnemigo = new MotoMadness(
               "Kawasaki",
               "/assets/kawasaki.png",
               5,
-              "/assets/kawasaki.png"
+              "/assets/kawasaki.png",
+              enemigo.id
             );
           } else if (motoNombre === "Yamaha") {
             motoEnemigo = new MotoMadness(
               "Yamaha",
               "/assets/yamaha.png",
               5,
-              "/assets/yamaha.png"
+              "/assets/yamaha.png",
+              enemigo.id
             );
           } else if (motoNombre === "Ducati") {
             motoEnemigo = new MotoMadness(
               "Ducati",
               "/assets/ducati.png",
               5,
-              "/assets/ducati.png"
+              "/assets/ducati.png",
+              enemigo.id
             );
           }
+
           motoEnemigo.x = enemigo.x;
           motoEnemigo.y = enemigo.y;
 
@@ -498,6 +535,10 @@ function obtenerObjetoMoto() {
 }
 
 function revisarColision(enemigo) {
+  if (!enemigo.y || !enemigo.x) {
+    return;
+  }
+
   const arribaEnemigo = enemigo.y;
   const abajoEnemigo = enemigo.y + enemigo.alto;
   const derechaEnemigo = enemigo.x + enemigo.ancho;
@@ -519,6 +560,8 @@ function revisarColision(enemigo) {
 
   detenerMovimiento();
   clearInterval(intervalo);
+
+  enemigoId = enemigo.id;
   sectionSeleccionarAtaque.style.display = "flex";
   sectionVerMapa.style.display = "none";
   seleccionarMotoEnemigo(enemigo);

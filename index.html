@@ -1,65 +1,64 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>MOTO MADNESS</title>
-    
-    <link rel="stylesheet" href="./styles.css" />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
-      rel="stylesheet"
-    />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  </head> 
-  <body>
-    <section id="seleccionar-moto">
-      <h1 class="title">MOTO MADNESS</h1>
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-      <h2>Pick your whip</h2>
+  <title>MOTO MADNESS</title>
 
-      <div id='contenedorTarjetas' class="motos">
+  <link rel="stylesheet" href="./styles.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
 
-      </div>
-      <button id="boton-moto"> Seleccionar </button>
-    </section>
+<body>
+  <section id="seleccionar-moto">
+    <h1 class="title">MOTO MADNESS</h1>
 
-    <section id='ver-mapa'>
-      <h2 class="title">Recorre el mapa con tu moto</h2>
-      <canvas id="mapa"></canvas>
-      <button onpointerup="detenerMovimiento()" onpointerdown="moverArriba()">Arriba</button>
-      <div>
-        <button onpointerup="detenerMovimiento()" onpointerdown="moverIzquierda()">Izquierda</button>
-        <button onpointerup="detenerMovimiento()" onpointerdown="moverAbajo()">Abajo</button>
-        <button onpointerup="detenerMovimiento()" onpointerdown="moverDerecha()">Derecha</button>
-        </div>
-    </section>
+    <h2>Pick your whip</h2>
 
-    <section id="seleccionar-ataque">
-      <h1 class="title" class=""> MOTO MADNESS </h1>
+    <div id="contenedorTarjetas" class="motos">
 
-      <h2> PICK YOUR CLASS </h2>
+    </div>
+    <button id="boton-moto"> Seleccionar </button>
+  </section>
 
-      <div id='contenedorAtaques'class="tarjetas-ataques">
-      </div>
-      <div>
-         <div id="mensajes">
-          <p id="resultado">Suerte pa, veremos que tan bueno sos ;)</p>
-         
+  <section id="ver-mapa">
+    <h2 class="title">Recorre el mapa con tu moto</h2>
+    <canvas id="mapa"></canvas>
+    <button onpointerup="detenerMovimiento()" onpointerdown="moverArriba()">Arriba</button>
+    <div>
+      <button onpointerup="detenerMovimiento()" onpointerdown="moverIzquierda()">Izquierda</button>
+      <button onpointerup="detenerMovimiento()" onpointerdown="moverAbajo()">Abajo</button>
+      <button onpointerup="detenerMovimiento()" onpointerdown="moverDerecha()">Derecha</button>
+    </div>
+  </section>
 
-       <section id="reiniciar">
+  <section id="seleccionar-ataque">
+    <h1 class="title" class=""> MOTO MADNESS </h1>
+
+    <h2> PICK YOUR CLASS </h2>
+
+    <div id="contenedorAtaques" class="tarjetas-ataques">
+    </div>
+    <div>
+      <div id="mensajes">
+        <p id="resultado">Suerte pa, veremos que tan bueno sos ;)</p>
+
+
+        <section id="reiniciar">
           <button id="boton-reiniciar">Reiniciar</button>
-       </section>
+        </section>
       </div>
       <div class="ataques">
 
         <div class="ataques-jugador">
-          <p id="vidas-jugador"> 0 </p> 
-          <p id="moto-jugador"></p> 
+          <p id="vidas-jugador"> 0 </p>
+          <p id="moto-jugador"></p>
           <div id="ataques-del-jugador"></div>
         </div>
         <div class="ataques-enemigo">
@@ -70,8 +69,9 @@
         <div id="ataques-del-jugador"></div>
         <div id="ataques-del-enemigo"></div>
       </div>
-    </section> 
-      <script src="./js/mokepon.js"></script>
-      
-  </body>
+  </section>
+  <script src="./js/mokepon.js"></script>
+
+</body>
+
 </html>
