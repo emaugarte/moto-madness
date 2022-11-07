@@ -19,6 +19,7 @@ const botonReiniciar = document.getElementById("boton-reiniciar");
 const sectionVerMapa = document.getElementById("ver-mapa");
 const mapa = document.getElementById("mapa");
 
+let jugadorId = null;
 let inputKawasaki;
 let inputYamaha;
 let inputDucati;
@@ -28,6 +29,7 @@ let ataquesMotos;
 let ataquesMotoEnemigo;
 
 let motos = [];
+let motosEnemigos = [];
 let ataqueJugador = [];
 let ataqueEnemigo = [];
 let botonTurbo;
@@ -106,74 +108,32 @@ let ducati = new MotoMadness(
   10
 );
 
-let kawasakiEnemigo = new MotoMadness(
-  "Kawasaki",
-  "/assets/kawasaki.png",
-  5,
-  "/assets/kawasaki.png"
-);
+const KAWASAKI_ATAQUES = [
+  { nombre: "⚙", id: "boton-turbo" },
+  { nombre: "⚙", id: "boton-turbo" },
+  { nombre: "⚙", id: "boton-turbo" },
+  { nombre: "💨", id: "boton-aspirado" },
+  { nombre: "🌠", id: "boton-nitro" },
+];
+const YAMAHA_ATAQUES = [
+  { nombre: "💨", id: "boton-aspirado" },
+  { nombre: "💨", id: "boton-aspirado" },
+  { nombre: "💨", id: "boton-aspirado" },
+  { nombre: "⚙", id: "boton-turbo" },
+  { nombre: "🌠", id: "boton-nitro" },
+];
 
-let yamahaEnemigo = new MotoMadness(
-  "Yamaha",
-  "/assets/yamaha.png",
-  5,
-  "/assets/yamaha.png"
-);
-
-let ducatiEnemigo = new MotoMadness(
-  "Ducati",
-  "/assets/ducati.png",
-  5,
-  "/assets/ducati.png"
-);
-
-kawasaki.ataques.push(
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "🌠", id: "boton-nitro" }
-);
-
-kawasakiEnemigo.ataques.push(
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "🌠", id: "boton-nitro" }
-);
-
-yamaha.ataques.push(
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "🌠", id: "boton-nitro" }
-);
-
-yamahaEnemigo.ataques.push(
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "⚙", id: "boton-turbo" },
-  { nombre: "🌠", id: "boton-nitro" }
-);
-
-ducati.ataques.push(
+const DUCATI_ATAQUES = [
   { nombre: "🌠", id: "boton-nitro" },
   { nombre: "🌠", id: "boton-nitro" },
   { nombre: "🌠", id: "boton-nitro" },
   { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "⚙", id: "boton-turbo" }
-);
+  { nombre: "⚙", id: "boton-turbo" },
+];
 
-ducatiEnemigo.ataques.push(
-  { nombre: "🌠", id: "boton-nitro" },
-  { nombre: "🌠", id: "boton-nitro" },
-  { nombre: "🌠", id: "boton-nitro" },
-  { nombre: "💨", id: "boton-aspirado" },
-  { nombre: "⚙", id: "boton-turbo" }
-);
+kawasaki.ataques.push(...KAWASAKI_ATAQUES);
+yamaha.ataques.push(...YAMAHA_ATAQUES);
+ducati.ataques.push(...DUCATI_ATAQUES);
 
 motos.push(kawasaki);
 motos.push(yamaha);
@@ -203,6 +163,20 @@ function iniciarJuego() {
 
   sectionReiniciar.style.display = "none";
   botonReiniciar.addEventListener("click", reiniciarJuego);
+
+  unirseAlJuego();
+}
+
+function unirseAlJuego() {
+  fetch("http://localhost:8080/unirse").then(function (res) {
+    // console.log(res);
+    if (res.ok) {
+      res.text().then(function (respuesta) {
+        console.log(respuesta);
+        jugadorId = respuesta;
+      });
+    }
+  });
 }
 
 function seleccionarMotoJugador() {
@@ -220,12 +194,27 @@ function seleccionarMotoJugador() {
     return;
   }
 
+  seleccionarMoto(motosJugador);
+
   extraerAtaques(motosJugador);
 
   sectionSeleccionarMoto.style.display = "none";
 
   sectionVerMapa.style.display = "flex";
   iniciarMapa();
+}
+
+function seleccionarMoto(motoJugador) {
+  console.log(motoJugador);
+  fetch(`http://localhost:8080/moto-madness/${jugadorId}`, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      motomadness: motoJugador,
+    }),
+  });
 }
 
 function extraerAtaques(motosJugador) {
@@ -389,19 +378,69 @@ function pintarCanvas() {
   motoJugadorObjeto.y = motoJugadorObjeto.y + motoJugadorObjeto.velocidadY;
   lienzo.clearRect(0, 0, mapa.width, mapa.height);
   lienzo.drawImage(mapaBackground, 0, 0, mapa.width, mapa.height);
-
   motoJugadorObjeto.pintarMoto();
-  yamahaEnemigo.pintarMoto();
-  kawasakiEnemigo.pintarMoto();
-  ducatiEnemigo.pintarMoto();
+
+  enviarPosicion(motoJugadorObjeto.x, motoJugadorObjeto.y);
+
+  motosEnemigos.forEach(function (moto) {
+    moto.pintarMoto();
+  });
   if (
     motoJugadorObjeto.velocidadX !== 0 ||
     motoJugadorObjeto.velocidadY !== 0
   ) {
-    revisarColision(yamahaEnemigo);
-    revisarColision(kawasakiEnemigo);
-    revisarColision(ducatiEnemigo);
   }
+}
+
+function enviarPosicion(x, y) {
+  console.log(jugadorId, x, y);
+  fetch(`http://localhost:8080/moto-madness/${jugadorId}/posicion`, {
+    method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      x,
+      y,
+    }),
+  }).then(function (res) {
+    if (res.ok) {
+      res.json().then(function ({ enemigos }) {
+        console.log(enemigos);
+        console.log(enemigos);
+        motosEnemigos = enemigos.map(function (enemigo) {
+          let motoEnemigo = null;
+          const motoNombre = enemigo.moto.nombre || "";
+          if (motoNombre === "Kawasaki") {
+            motoEnemigo = new MotoMadness(
+              "Kawasaki",
+              "/assets/kawasaki.png",
+              5,
+              "/assets/kawasaki.png"
+            );
+          } else if (motoNombre === "Yamaha") {
+            motoEnemigo = new MotoMadness(
+              "Yamaha",
+              "/assets/yamaha.png",
+              5,
+              "/assets/yamaha.png"
+            );
+          } else if (motoNombre === "Ducati") {
+            motoEnemigo = new MotoMadness(
+              "Ducati",
+              "/assets/ducati.png",
+              5,
+              "/assets/ducati.png"
+            );
+          }
+          motoEnemigo.x = enemigo.x;
+          motoEnemigo.y = enemigo.y;
+
+          return motoEnemigo;
+        });
+      });
+    }
+  });
 }
 
 function moverDerecha() {
